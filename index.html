@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SafeCommute</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.24.0/moment.min.js'></script>
+    <script src='https://cdn.jsdelivr.net/npm/javascript-debounce@1.0.1/dist/javascript-debounce.min.js'></script>
+    <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.1/maps/maps-web.min.js'></script>
+    <script src='https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.1/services/services-web.min.js'></script>
+    <script type='text/javascript' src='js/mobile-or-tablet.js'></script>
+    <script type='text/javascript' src='js/formatters.js'></script>
+    <script type='text/javascript' src='js/dom-helpers.js'></script>
+    <script type='text/javascript' src='js/side-panel.js'></script>
+    <script type='text/javascript' src='js/incidents-details-manager.js'></script>
+    <script type='text/javascript' src='js/incident-marker.js'></script>
+    <link rel='stylesheet' type='text/css' href='css/index.css' />
+    <link rel='stylesheet' type='text/css' href='css/poi.css' />
+    <link rel='stylesheet' type='text/css' href='css/traffic-incidents.css' />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <link rel="stylesheet" type="text/css"
+        href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" />
+    <link rel="stylesheet" href="css/styles.css">
+    <style>
+        body {
+            /* background-color: #121212; */
+            /* Dark background */
+            /*color: #ffffff; */
+            /* White text */
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            /* Clean, modern font */
+        }
+
+        .navbar {
+            background-color: #000000;
+            /* Navbar background */
+        }
+
+        .navbar-brand,
+        .nav-link {
+            color: #ffffff;
+            /* White text for navbar items */
+        }
+
+        .nav-link:hover {
+            color: #f2f2f2;
+            /* Lighter on hover */
+        }
+
+        .side-panel {
+            background-color: #1f1f1f;
+            /* Side panel background */
+            border-radius: 8px;
+            /* Rounded corners */
+            padding: 20px;
+            /* Padding for spacing */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            /* Subtle shadow for depth */
+            overflow: hidden;
+
+        }
+
+        .form-label {
+            font-weight: bold;
+            /* Bold labels */
+        }
+
+        .form-control {
+            background-color: #2a2a2a;
+            /* Darker input field */
+            color: #ffffff;
+            /* White text */
+            border: 1px solid #444;
+            /* Subtle border */
+        }
+
+        .form-control::placeholder {
+            color: #aaa;
+            /* Placeholder color */
+        }
+
+        .btn-primary {
+            background-color: #ff5a5f;
+            /* Uber-like button color */
+            border: none;
+            /* No border */
+            border-radius: 25px;
+            /* Rounded button */
+            padding: 10px;
+            /* Padding for button */
+        }
+
+        .btn-primary:hover {
+            background-color: #ff3b3f;
+            /* Darker red on hover */
+        }
+
+        .map-view {
+            position: relative;
+            height: 91vh;
+            /* Full viewport height for the map */
+        }
+
+        .full-map {
+            height: 100%;
+            /* Make the map take full height */
+            border-radius: 8px;
+            /* Rounded corners */
+        }
+    </style>
+</head>
+
+<body>
+    <main>
+        <nav class="navbar navbar-expand-lg bg-body-tertiary" data-bs-theme="dark">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="https://github.com/altf4-games/KSP-DA-Dashboard">>_ Alt F4</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                    data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                    aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link active" aria-current="page" href="/">Home</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        <div>
+            <div class='map-view'>
+                <div class='tt-side-panel'>
+                    <header class='tt-side-panel__header -traffic'></header>
+                    <div class='tt-overflow'>
+                        <div class='js-results'></div>
+                    </div>
+                </div>
+                <div id='map' class='full-map map'></div>
+            </div>
+            <div class="side-panel">
+                <h4>Set Your Location</h4>
+                <div class="mb-3">
+                    <label for="fromLocation" class="form-label">From</label>
+                    <input type="text" class="form-control" id="fromLocation" placeholder="Enter starting location">
+                </div>
+                <div class="mb-3">
+                    <label for="toLocation" class="form-label">To</label>
+                    <input type="text" class="form-control" id="toLocation" placeholder="Enter destination">
+                </div>
+                <button class="btn btn-primary" onclick="Search()">Go</button>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL"
+        crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <script src="index.js"></script>
+    <script src="script.js"></script>
+</body>
+
+</html>
