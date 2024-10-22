@@ -26,90 +26,61 @@
         href="https://api.tomtom.com/maps-sdk-for-web/cdn/6.x/6.25.0/maps/maps.css" />
     <link rel="stylesheet" href="css/styles.css">
     <style>
-        body {
-            /* background-color: #121212; */
-            /* Dark background */
-            /*color: #ffffff; */
-            /* White text */
-            font-family: 'Helvetica Neue', Arial, sans-serif;
-            /* Clean, modern font */
-        }
-
         .navbar {
             background-color: #000000;
-            /* Navbar background */
         }
 
         .navbar-brand,
         .nav-link {
             color: #ffffff;
-            /* White text for navbar items */
         }
 
         .nav-link:hover {
             color: #f2f2f2;
-            /* Lighter on hover */
         }
 
         .side-panel {
             background-color: #1f1f1f;
-            /* Side panel background */
             border-radius: 8px;
-            /* Rounded corners */
             padding: 20px;
-            /* Padding for spacing */
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-            /* Subtle shadow for depth */
             overflow: hidden;
 
         }
 
         .form-label {
             font-weight: bold;
-            /* Bold labels */
         }
 
         .form-control {
             background-color: #2a2a2a;
-            /* Darker input field */
             color: #ffffff;
-            /* White text */
             border: 1px solid #444;
-            /* Subtle border */
         }
 
         .form-control::placeholder {
             color: #aaa;
-            /* Placeholder color */
         }
 
         .btn-primary {
             background-color: #ff5a5f;
-            /* Uber-like button color */
             border: none;
-            /* No border */
             border-radius: 25px;
-            /* Rounded button */
             padding: 10px;
-            /* Padding for button */
         }
 
         .btn-primary:hover {
             background-color: #ff3b3f;
-            /* Darker red on hover */
         }
 
         .map-view {
             position: relative;
             height: 91vh;
-            /* Full viewport height for the map */
         }
 
         .full-map {
             height: 100%;
-            /* Make the map take full height */
             border-radius: 8px;
-            /* Rounded corners */
         }
     </style>
 </head>
@@ -154,6 +125,11 @@
                     <input type="text" class="form-control" id="toLocation" placeholder="Enter destination">
                 </div>
                 <button class="btn btn-primary" onclick="Search()">Go</button>
+
+                <!-- Weather Info will be displayed here -->
+                <div id="weatherInfo" class="mt-4"></div>
+                <!-- ETA will be displayed here -->
+                <div id="etaDisplay" style="margin-top: 20px;"></div>
             </div>
         </div>
     </main>

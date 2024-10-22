@@ -25,13 +25,39 @@ const getLocationCoordinates = async (locationName) => {
 
 let marker;
 
+function fetchWeather(location) {
+  // Replace the location with the destination (you can enhance this by geocoding later)
+  const apiKey = "7d273806546e4e64aed52511242003";
+  const apiUrl = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=no`;
+
+  fetch(apiUrl)
+    .then((response) => response.json())
+    .then((data) => {
+      // Update the weather information in the 'weatherInfo' div
+      const weatherDiv = document.getElementById("weatherInfo");
+      const { location, current } = data;
+      const weatherHTML = `
+                <h5>Weather in ${location.name}, ${location.region}</h5>
+                <p><strong>Condition:</strong> ${current.condition.text}</p>
+                <p><strong>Temperature:</strong> ${current.temp_c}°C / ${current.temp_f}°F</p>
+                <p><strong>Feels Like:</strong> ${current.feelslike_c}°C / ${current.feelslike_f}°F</p>
+                <p><strong>Wind:</strong> ${current.wind_kph} kph (${current.wind_dir})</p>
+                <p><strong>Humidity:</strong> ${current.humidity}%</p>
+            `;
+      weatherDiv.innerHTML = weatherHTML;
+    })
+    .catch((error) => {
+      console.error("Error fetching weather:", error);
+    });
+}
+
 async function Search() {
   const startLocationName = document.getElementById("fromLocation").value; // Get starting location
   const destinationLocationName = document.getElementById("toLocation").value; // Get destination location
 
   coordinatesS = await getLocationCoordinates(startLocationName); // Fetch coordinates for starting location
   coordinatesD = await getLocationCoordinates(destinationLocationName); // Fetch coordinates for destination location
-
+  fetchWeather(destinationLocationName);
   if (coordinatesS && coordinatesD) {
     // Set the map center to the starting location
     map.setCenter([coordinatesS.longitude, coordinatesS.latitude]);
@@ -116,6 +142,7 @@ function showRoute(startCoords, endCoords) {
     })
     .then(function (response) {
       var geojson = response.toGeoJson();
+      console.log(geojson);
       map.addLayer(
         {
           id: "route",
@@ -141,11 +168,33 @@ function showRoute(startCoords, endCoords) {
       map.fitBounds(bounds, { duration: 0, padding: 50 });
 
       if (response.routes && response.routes[0] && response.routes[0].summary) {
-        const distanceInMeters = response.routes[0].summary.lengthInMeters;
+        const summary = response.routes[0].summary;
+        const distanceInMeters = summary.lengthInMeters;
         const distanceInKilometers = distanceInMeters / 1000;
+        const travelTimeInMinutes = summary.travelTimeInSeconds / 60;
+        const arrivalTime = summary.arrivalTime;
 
-        time = response.routes[0].summary.travelTimeInSeconds / 60;
-        distance = distanceInKilometers;
+        const etaDiv = document.getElementById("etaDisplay");
+
+        // Convert the arrival time to a more readable format using Date object
+        const arrivalDate = new Date(arrivalTime);
+        const arrivalHours = arrivalDate.getHours().toString().padStart(2, "0");
+        const arrivalMinutes = arrivalDate
+          .getMinutes()
+          .toString()
+          .padStart(2, "0");
+        const formattedArrivalTime = `${arrivalHours}:${arrivalMinutes}`;
+
+        // Update the ETA display div
+        etaDiv.innerHTML = `
+          <p><strong>Estimated Time of Arrival:</strong> ${formattedArrivalTime}</p>
+          <p><strong>Total Travel Time:</strong> ${travelTimeInMinutes.toFixed(
+            0
+          )} minutes</p>
+          <p><strong>Distance:</strong> ${distanceInKilometers.toFixed(
+            2
+          )} km</p>
+        `;
 
         console.log(`Distance: ${distanceInKilometers.toFixed(2)} km`);
         console.log(
