@@ -52,6 +52,35 @@ function fetchWeather(location) {
     });
 }
 
+function checkAlert(destination) {
+  if (destination.toLowerCase().includes("storm")) {
+    return "red";
+  } else if (destination.toLowerCase().includes("rain")) {
+    return "yellow";
+  }
+  return "none";
+}
+
+function showAlert(level) {
+  const alertPopup = document.getElementById("alertPopup");
+  const alertText = document.getElementById("alertText");
+
+  if (level === "red") {
+    alertText.innerText =
+      "Red Alert: Severe Weather Conditions at your destination!";
+    alertPopup.style.backgroundColor = "#ff3b3f";
+  } else if (level === "yellow") {
+    alertText.innerText =
+      "Yellow Alert: Moderate Weather Conditions at your destination!";
+    alertPopup.style.backgroundColor = "#ffb74d";
+  }
+
+  alertPopup.style.display = "block";
+  setTimeout(() => {
+    alertPopup.style.display = "none";
+  }, 5000);
+}
+
 async function Search() {
   if (!firstRide) {
     map.removeLayer("route");
@@ -65,6 +94,12 @@ async function Search() {
   coordinatesS = await getLocationCoordinates(startLocationName); // Fetch coordinates for starting location
   coordinatesD = await getLocationCoordinates(destinationLocationName); // Fetch coordinates for destination location
   fetchWeather(destinationLocationName);
+
+  const alertLevel = checkAlert(destinationLocationName); // Mockup function to check alert level
+
+  if (alertLevel === "red" || alertLevel === "yellow") {
+    showAlert(alertLevel);
+  }
   if (coordinatesS && coordinatesD) {
     // Set the map center to the starting location
     map.setCenter([coordinatesS.longitude, coordinatesS.latitude]);
