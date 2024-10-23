@@ -29,7 +29,7 @@ let marker;
 function fetchWeather(location) {
   // Replace the location with the destination (you can enhance this by geocoding later)
   const apiKey = "7d273806546e4e64aed52511242003";
-  const apiUrl = `http://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=no`;
+  const apiUrl = `https://api.weatherapi.com/v1/current.json?key=${apiKey}&q=${location}&aqi=no`;
 
   fetch(apiUrl)
     .then((response) => response.json())
