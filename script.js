@@ -1,5 +1,6 @@
 var coordinatesD;
 var coordinatesS;
+var firstRide = true;
 
 const getLocationCoordinates = async (locationName) => {
   const url = `https://api.tomtom.com/search/2/search/${encodeURIComponent(
@@ -52,6 +53,12 @@ function fetchWeather(location) {
 }
 
 async function Search() {
+  if (!firstRide) {
+    map.removeLayer("route");
+    map.removeLayer("start");
+    map.removeLayer("finish");
+    map.removeSource("route");
+  }
   const startLocationName = document.getElementById("fromLocation").value; // Get starting location
   const destinationLocationName = document.getElementById("toLocation").value; // Get destination location
 
@@ -77,6 +84,7 @@ async function Search() {
       [coordinatesS.longitude, coordinatesS.latitude],
       [coordinatesD.longitude, coordinatesD.latitude]
     );
+    firstRide = false;
   } else {
     console.log("Could not find coordinates for the specified locations.");
   }

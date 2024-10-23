@@ -148,8 +148,8 @@ Papa.parse("AccidentsBig.csv", {
         },
         paint: {
           "heatmap-intensity": 3,
-          "heatmap-radius": 40,
-          "heatmap-opacity": 0.6,
+          "heatmap-radius": 20,
+          "heatmap-opacity": 0.5,
         },
       });
     });

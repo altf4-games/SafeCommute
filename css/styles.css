@@ -14,18 +14,18 @@ body {
 
 .map {
     margin-top: 1vh;
-    height: 90vh;
-    width: 70vw;
+    height: 100vh;
+    width: 100vw;
     display: inline-flex !important;
 }
 
 .full-map {
-    height: 90vh;
-    width: 70vw;
+    height: 100vh;
+    width: 100vw;
     display: inline-block !important;
 }
 
-.side-panel {
+/* .side-panel {
     position: absolute;
     top: 0;
     right: 0;
@@ -40,7 +40,7 @@ body {
     padding: 1vh;
     z-index: 999;
     overflow-y:scroll;
-}
+} */
 
 .gpt-insights .card {
     margin-bottom: 10px;
